@@ -8,3 +8,6 @@ interceptor: interceptor.cpp
 
 clean: 
 	rm sample
+
+run:
+	./interceptor sample.c sample_out.c
