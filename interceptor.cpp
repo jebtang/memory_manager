@@ -8,7 +8,7 @@
 #include <fstream>
 
 using namespace std;
-
+int debug = 0;
 enum class_type  { IDENTIFIER, KEYWORD, INTEGER, OPERATOR, STAR, WHITESPACE, MISCELLANEOUS }; // This is the class of elements seen
 int num_classes = 7;
 
@@ -174,7 +174,8 @@ void parse_file(char *file_input, char *file_output){
     // removing all the empty lines, lines that are pragmas, header inclusions, single line comments 
     len = buffer.size();
     if (len == 0 || buffer[0] == '#' || (len > 1 && buffer[0] == '/' && buffer[1] == '/')) {
-      cout << "------------>>>> " << buffer << endl;
+      if (debug == 1)
+	cout << "------------>>>> " << buffer << endl;
       fs_out << buffer << endl;
       continue;
     }
@@ -186,12 +187,14 @@ void parse_file(char *file_input, char *file_output){
       buffer.append(temp_buffer);
       len = buffer.size();
     }
+    if (debug)
      cout << "------------>>>> " << buffer << endl;
      fs_out << buffer << endl;
     // In each line we check whether all the identifiers and see if any of them are dynamic variables
     // Getting tokens from the current line and checking if they already exist as dynamic objects
     token_list = extract_tokens (buffer);
-    debug_list(token_list); 
+    if (debug == 1)
+      debug_list(token_list); 
     // Check for two patterns currently <keyword, identifier (optional), *, identifier> then insert the token in the list of dynamic objects
     count = 0,valid_dy_object = false ; string dynamic_object_lexeme;
     for (list<token>::iterator it = token_list.begin(); it != token_list.end() && count < 4; it++){
@@ -215,7 +218,9 @@ void parse_file(char *file_input, char *file_output){
     for (list <token>::iterator it = token_list.begin(); it != token_list.end(); it++){
       token_str = it->lexeme;
       if (exists(token_str, dynamic_objects)){
-	cout << token_str << " is dynamic variable" << endl;
+	if (debug)
+	  cout << token_str << " is dynamic variable" << endl;
+	fs_out << "access ("<< token_str << " ,1);" << endl;
       }
     }
   }
@@ -229,7 +234,10 @@ int main(int argc, char** argv){
     printf("Error!! Enter the file name to be parsed");
     return -1;
   }
+  if (argc > 3)
+    if (isdigit (argv[3][0]))
+	debug = atoi (argv[3]);
   // Parse the file and annotate all memory accesses with events
-  parse_file (argv[1], argv[2]);
+   parse_file (argv[1], argv[2]);
   return 0;
 }
