@@ -163,6 +163,7 @@ void parse_file(char *file_input, char *file_output){
     return;
   }
   ofstream fs_out (file_output);
+  fs << "#include \"memory_monitor.h\"" << endl;
   int count, len; // Temporary counter variables
   string buffer, temp_buffer; // The buffer in which each of the line is read 
   string token_str; // Temporary variable to store a token in 
@@ -220,7 +221,7 @@ void parse_file(char *file_input, char *file_output){
       if (exists(token_str, dynamic_objects)){
 	if (debug)
 	  cout << token_str << " is dynamic variable" << endl;
-	fs_out << "access ("<< token_str << " ,1);" << endl;
+	fs_out << "access ((void *)"<< token_str << " ,1);" << endl;
       }
     }
   }
