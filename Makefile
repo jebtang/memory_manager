@@ -10,4 +10,4 @@ clean:
 	rm sample
 
 run:
-	./interceptor sample.c sample_out.c
+	./interceptor sample1.c sample_out.cpp 0
