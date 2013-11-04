@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <iostream>
 #include "stdio.h"
 #include "stdlib.h"
@@ -9,8 +10,8 @@
 
 using namespace std;
 int debug = 0;
-enum class_type  { IDENTIFIER, KEYWORD, INTEGER, OPERATOR, STAR, WHITESPACE, MISCELLANEOUS }; // This is the class of elements seen
-int num_classes = 7;
+enum class_type  { IDENTIFIER, KEYWORD, INTEGER, OPERATOR, STAR, WHITESPACE, POINTER, MISCELLANEOUS }; // This is the class of elements seen
+int num_classes = 8;
 
 // Token class maps each lexeme to its corresponding type
 class token {
@@ -34,10 +35,10 @@ int num_keywords = 32;
 
 // Reference: http://www.cs.mun.ca/~michael/c/op.html
 string operators[] = {
-  ",", "=", "?", ":", "||", "&&", "|", "^", "==", "!=", "<",">", "<=", ">=", "<<", ">>", "+", "-", "%", "/", "~", "!", "&", "->", ".", "(", ")", "{", "}", "[", "]"
+  ",", "=", "?", ":", "||", "&&", "|", "^", "==", "!=", "<",">", "<=", ">=", "<<", ">>", "+", "-", "%", "/", "~", "!", "&", ".", "(", ")", "{", "}", "[", "]"
 };
 // This is the total number of operators
-int num_operators = 31;
+int num_operators = 30;
 
 // This function tests whether the given string is an operator or not 
 bool is_operator (string str){
@@ -88,6 +89,8 @@ bool is_keyword (string str){
 
 // This function returns the class type of a given token string 
 class_type get_class_type (string token){
+  if (token.size()==0)
+    return MISCELLANEOUS;
   if (isdigit(token[0])) // We have assumed that our tokens for numbers have only integers in them
     return INTEGER;
   if (is_keyword (token))
@@ -105,19 +108,38 @@ class_type get_class_type (string token){
 list <token> extract_tokens (string buffer){
   list <token> token_map; // This is the list of token objects from each line
   int count, token_start, length = buffer.length();
+  token temp_token;
+  string parent_token;
   for (count = 0; count < length; count++){
+    string current_token;  // Start of a new token  
     while (buffer[count] == ' '){ // Skipping whitespaces 
+      parent_token = "";
       count++;
     }
-    string current_token;  // Start of a new token  
-    while (((count < length - 1) && !has_token_finished(buffer[count], buffer[count+1])) || (count == length - 1)){
-      current_token.push_back (buffer[count]);
-      count++;
+      while (count < length - 1){
+      if (has_token_finished(buffer[count], buffer[count+1])){
+      	if ((count < length - 2) && (buffer[count + 1] == '-' && buffer[count + 2] == '>')){
+	  current_token.push_back (buffer[count++]);
+	  if (get_class_type(parent_token) == IDENTIFIER){
+	    parent_token.append ("->");
+	    parent_token.append (current_token);
+	    temp_token.set(parent_token, POINTER);
+	  } else { 
+	   temp_token.set(current_token, POINTER);  
+	  }
+	  token_map.push_back (temp_token);
+	}
+	else 
+	  break;
+      } else {
+	current_token.push_back (buffer[count++]);
+      }
     }
     current_token.push_back(buffer[count]);
-    token temp_token;
     temp_token.set (current_token, get_class_type (current_token));
     token_map.push_back (temp_token);
+      if (get_class_type(current_token) == IDENTIFIER)
+       parent_token.assign(current_token);
   }
   return token_map;
 }
@@ -147,6 +169,16 @@ bool check_order (class_type c, int position){
   }
 }
 
+// function used to trim a string 
+string trim (string str, string whitespace){
+    int strBegin = str.find_first_not_of(whitespace);
+    if (strBegin == std::string::npos)
+      return ""; // no content
+    int strEnd = str.find_last_not_of(whitespace);
+    int strRange = strEnd - strBegin + 1;
+    return str.substr(strBegin, strRange);
+}
+
 // This function is for debugging purposes
 void debug_list (list <token> token_list){
   for (list<token>::iterator it = token_list.begin(); it != token_list.end(); it++){
@@ -163,7 +195,7 @@ void parse_file(char *file_input, char *file_output){
     return;
   }
   ofstream fs_out (file_output);
-  fs << "#include \"memory_monitor.h\"" << endl;
+  fs_out << "#include \"memory_monitor.h\"" << endl;
   int count, len; // Temporary counter variables
   string buffer, temp_buffer; // The buffer in which each of the line is read 
   string token_str; // Temporary variable to store a token in 
@@ -171,7 +203,7 @@ void parse_file(char *file_input, char *file_output){
   list <token> token_list;   // Tokens from each line
   bool valid_dy_object = false; // Initially the no dynamic object has been seen, flag is set to false 
   while (getline(fs_in, buffer)){ // reading each line from the file , currently we assume each statement == each line
-   
+    //    buffer = trim (buffer, " \t"); // trimming the buffer
     // removing all the empty lines, lines that are pragmas, header inclusions, single line comments 
     len = buffer.size();
     if (len == 0 || buffer[0] == '#' || (len > 1 && buffer[0] == '/' && buffer[1] == '/')) {
@@ -180,8 +212,27 @@ void parse_file(char *file_input, char *file_output){
       fs_out << buffer << endl;
       continue;
     }
+
+    // Need to filter out structs 
+    if (buffer.compare(0, 6, "struct") == 0){
+      size_t n = std::count(buffer.begin(), buffer.end(), '{');
+      bool flag = (n > 0); // at least one { has been seen
+      int count_p = n;
+      while (count_p != 0 || !flag){
+	fs_out << buffer << endl;
+	n = std::count(buffer.begin(), buffer.end(), '}');
+	count_p -= n;
+	getline(fs_in, buffer);
+	n = std::count(buffer.begin(), buffer.end(), '{');
+	count_p += n;
+	if (!flag)
+	  flag = (n > 0) ;
+      }
+      continue;
+    }
+
     // We also combine lines here 
-    while (buffer[len-1] != ';' && buffer[len - 1] != '}'){
+    while (buffer[len-1] != ';' && buffer[len - 1] != '}' && buffer[len -1] != '{'){
       if (!getline(fs_in, temp_buffer))
 	break;
       buffer.append(1, ' '); 
@@ -218,7 +269,7 @@ void parse_file(char *file_input, char *file_output){
     }
     for (list <token>::iterator it = token_list.begin(); it != token_list.end(); it++){
       token_str = it->lexeme;
-      if (exists(token_str, dynamic_objects)){
+      if (exists(token_str, dynamic_objects) || it->type == POINTER){
 	if (debug)
 	  cout << token_str << " is dynamic variable" << endl;
 	fs_out << "access ((void *)"<< token_str << " ,1);" << endl;
