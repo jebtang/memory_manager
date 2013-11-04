@@ -66,11 +66,13 @@ bool has_token_finished (char c1, char c2){
     if (operators[count].length() == 2 && c1 == operators[count][0] && c2 == operators[count][1])
 	return true;
    }
-  // If the second character is any of the delimiters then we break the current token
+  // If any of the characters is a delimiter then we break the current token
   for (count = 0; count < length_delimiters; count++){
-    if (c2 == delimiters [count])
+    if (c2 == delimiters [count] || c1 == delimiters [count])
       return true;
    }
+  if (c1 != c2 && (c1 == '*' || c2 == '*'))
+    return true;
   return false;
 }
 
@@ -112,6 +114,7 @@ list <token> extract_tokens (string buffer){
       current_token.push_back (buffer[count]);
       count++;
     }
+    current_token.push_back(buffer[count]);
     token temp_token;
     temp_token.set (current_token, get_class_type (current_token));
     token_map.push_back (temp_token);
@@ -144,6 +147,14 @@ bool check_order (class_type c, int position){
   }
 }
 
+// This function is for debugging purposes
+void debug_list (list <token> token_list){
+  for (list<token>::iterator it = token_list.begin(); it != token_list.end(); it++){
+    cout << it->lexeme << ",";
+  } 
+  cout << endl;
+}  
+
 // Function which parses the file and interceptors each memory access with an event to the runtime 
 void parse_file(char *file_input, char *file_output){
   ifstream fs_in (file_input);
@@ -152,20 +163,35 @@ void parse_file(char *file_input, char *file_output){
     return;
   }
   ofstream fs_out (file_output);
-  int count; // Temporary counter variable
-  string buffer; // The buffer in which each of the line is read 
+  int count, len; // Temporary counter variables
+  string buffer, temp_buffer; // The buffer in which each of the line is read 
   string token_str; // Temporary variable to store a token in 
   list <string> dynamic_objects; // We need to maintain a list of all the dynamic variables by their names
   list <token> token_list;   // Tokens from each line
   bool valid_dy_object = false; // Initially the no dynamic object has been seen, flag is set to false 
   while (getline(fs_in, buffer)){ // reading each line from the file , currently we assume each statement == each line
+   
     // removing all the empty lines, lines that are pragmas, header inclusions, single line comments 
-    int len = buffer.size();
-    if (len == 0 || buffer[0] == '#' || (len > 1 && buffer[0] == '/' && buffer[1] == '/')) 
+    len = buffer.size();
+    if (len == 0 || buffer[0] == '#' || (len > 1 && buffer[0] == '/' && buffer[1] == '/')) {
+      cout << "------------>>>> " << buffer << endl;
+      fs_out << buffer << endl;
       continue;
+    }
+    // We also combine lines here 
+    while (buffer[len-1] != ';' && buffer[len - 1] != '}'){
+      if (!getline(fs_in, temp_buffer))
+	break;
+      buffer.append(1, ' '); 
+      buffer.append(temp_buffer);
+      len = buffer.size();
+    }
+     cout << "------------>>>> " << buffer << endl;
+     fs_out << buffer << endl;
     // In each line we check whether all the identifiers and see if any of them are dynamic variables
     // Getting tokens from the current line and checking if they already exist as dynamic objects
     token_list = extract_tokens (buffer);
+    debug_list(token_list); 
     // Check for two patterns currently <keyword, identifier (optional), *, identifier> then insert the token in the list of dynamic objects
     count = 0,valid_dy_object = false ; string dynamic_object_lexeme;
     for (list<token>::iterator it = token_list.begin(); it != token_list.end() && count < 4; it++){
@@ -184,6 +210,7 @@ void parse_file(char *file_input, char *file_output){
     }
     if (valid_dy_object){
       dynamic_objects.push_back(dynamic_object_lexeme);
+      cout << dynamic_object_lexeme << endl;
     }
     for (list <token>::iterator it = token_list.begin(); it != token_list.end(); it++){
       token_str = it->lexeme;
@@ -202,7 +229,7 @@ int main(int argc, char** argv){
     printf("Error!! Enter the file name to be parsed");
     return -1;
   }
-  // Parse the file and annotate all memory accesses with events 
+  // Parse the file and annotate all memory accesses with events
   parse_file (argv[1], argv[2]);
   return 0;
 }
