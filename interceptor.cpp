@@ -35,10 +35,10 @@ int num_keywords = 32;
 
 // Reference: http://www.cs.mun.ca/~michael/c/op.html
 string operators[] = {
-  ",", "=", "?", ":", "||", "&&", "|", "^", "==", "!=", "<",">", "<=", ">=", "<<", ">>", "+", "-", "%", "/", "~", "!", "&", ".", "(", ")", "{", "}", "[", "]"
+  ",", "=", "?", ":", "||", "&&", "|", "^", "==", "!=", "<",">", "<=", ">=", "<<", ">>", "+", "-", "%", "/", "~", "!", "&", ".", "(", ")", "{", "}", "[", "]", "->"
 };
 // This is the total number of operators
-int num_operators = 30;
+int num_operators = 31;
 
 // This function tests whether the given string is an operator or not 
 bool is_operator (string str){
@@ -109,38 +109,37 @@ list <token> extract_tokens (string buffer){
   list <token> token_map; // This is the list of token objects from each line
   int count, token_start, length = buffer.length();
   token temp_token;
-  string parent_token;
-  for (count = 0; count < length; count++){
-    string current_token;  // Start of a new token  
-    while (buffer[count] == ' '){ // Skipping whitespaces 
-      parent_token = "";
-      count++;
-    }
-      while (count < length - 1){
-      if (has_token_finished(buffer[count], buffer[count+1])){
+  string parent_token, current_token = "";
+  bool temp_token_is_set = false;
+  for (count = 0; count < length; count++, current_token="", temp_token_is_set = false){  // Start of a new token  
+    while (buffer[count] == ' '){parent_token = ""; count++;}; // Skipping whitespaces
+  while (count < length - 1){ // Checking whether count has exceeded the length of the buffer
+    current_token.push_back(buffer[count]); // Keep appending the current character to the current token 
+    if (has_token_finished(buffer[count], buffer[count+1])){
       	if ((count < length - 2) && (buffer[count + 1] == '-' && buffer[count + 2] == '>')){
-	  current_token.push_back (buffer[count++]);
-	  if (get_class_type(parent_token) == IDENTIFIER){
+     	  if (get_class_type(parent_token) == IDENTIFIER || get_class_type(parent_token) == POINTER){ // Case when dereferencing a pointer to a pointer 
 	    parent_token.append ("->");
 	    parent_token.append (current_token);
 	    temp_token.set(parent_token, POINTER);
-	  } else { 
-	   temp_token.set(current_token, POINTER);  
-	  }
-	  token_map.push_back (temp_token);
+	    temp_token_is_set = true;
+	  } else {
+	    temp_token.set(current_token, POINTER);  
+	    temp_token_is_set = true;
+     	  }
 	}
-	else 
-	  break;
-      } else {
-	current_token.push_back (buffer[count++]);
-      }
+	//	count++;
+	break;
     }
+    count++;
+  }
+  if (count == length - 1)
     current_token.push_back(buffer[count]);
+  if (!(temp_token_is_set))
     temp_token.set (current_token, get_class_type (current_token));
     token_map.push_back (temp_token);
       if (get_class_type(current_token) == IDENTIFIER)
        parent_token.assign(current_token);
-  }
+}
   return token_map;
 }
 
