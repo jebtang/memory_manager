@@ -1,4 +1,4 @@
-all: sample interceptor output ssd_alloc test
+all: sample interceptor output test
 
 sample: sample.c
 	gcc -o sample sample.c
@@ -21,6 +21,6 @@ run_out:
 test_dir_ssd_alloc =./Test/SSD_Alloc/
 test: ssd_alloc.cpp $(test_dir_ssd_alloc)test_create_object.cpp
 	g++ -o testobj $(test_dir_ssd_alloc)test_create_object.cpp ssd_alloc.cpp
-	
+
 run:
 	./interceptor sample.c sample_out.cpp 1

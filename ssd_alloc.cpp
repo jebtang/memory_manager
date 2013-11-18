@@ -9,6 +9,7 @@
 #include <signal.h>
 #include "ssd_alloc.h"
 #include "assert.h"
+#include "string.h"
 
 using namespace std;
 
@@ -95,7 +96,7 @@ struct object init_object(int size){
 
 // Allocates an object and currently stores it in object table
 void *ssd_oalloc (int num_objects, int size_object){
-	assert (num_objects == 1);
+  assert (num_objects == 1);
   // Insert the object in object table
   // Allocating page in memory to the object, currently we implement it for objects of size < 4KB and num_objects = 1
   void *header_location = malloc (sizeof (void *));
@@ -104,7 +105,7 @@ void *ssd_oalloc (int num_objects, int size_object){
   object_table.insert(pair <void *, struct object> (object_location, init_object (size_object))); // On an initialization, some memory is allocated to the object and is pushed into memory
   // Protecting the page so that on each access the page faults, protection mechanism is for any access 
   if (mprotect ((void *) header_location, PAGE_SIZE, PROT_NONE) == -1){
-	 handle_error("mprotect Error");
+    handle_error("mprotect Error");
   }
   // Initially the page is advised to be not needed
   madvise (header_location, PAGE_SIZE, MADV_DONTNEED);
