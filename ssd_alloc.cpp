@@ -15,7 +15,7 @@ using namespace std;
 #define handle_error(msg) \
   do {perror (msg); exit(EXIT_FAILURE);} while (0)
 
-#define PAGE_BUFFER_SIZE 10 // The page buffer has 10 pages in memory 
+#define PAGE_BUFFER_SIZE 10 // The page buffer has 10 pages in memory
 int PAGE_SIZE =  sysconf(_SC_PAGE_SIZE); // Each page in page buffer is of size 4KB
 
 struct page_buffer_str {
@@ -76,12 +76,6 @@ void seg_handler(int sig, siginfo_t *si, void *unused){
 
 void init_ssd_alloc (void){
 // Initializing the page buffer to get memory space from for storing the pages in the page buffer
-//  int value = posix_memalign (&page_buffer, PAGE_SIZE, PAGE_BUFFER_SIZE * PAGE_SIZE);
-//  if (value == EINVAL)
-//    handle_error("aligment has to be a power of 2");
-//  if (value == ENOMEM)
-//    handle_error("out of memory");
-
   page_buffer.pagesInBuffer = PAGE_BUFFER_SIZE; // Initially the number of pages in the page buffer is equal to the total size of the page buffer
 // defining the segmentation fault handler
   sa.sa_flags = SA_SIGINFO; // The siginfo_t structure is passed as a second parameter to the user signal handler function
@@ -101,13 +95,15 @@ struct object init_object(int size){
 
 // Allocates an object and currently stores it in object table
 void *ssd_oalloc (int num_objects, int size_object){
+	assert (num_objects == 1);
   // Insert the object in object table
-  // Allocating page in memory to the object, currently we implement it for objects of size < 4KB and num_objects = 1 
-  void *object_location = malloc (PAGE_SIZE); // object_location is the virtual memory address of the object 
+  // Allocating page in memory to the object, currently we implement it for objects of size < 4KB and num_objects = 1
+  void *object_location = malloc (sizeof (void *));
+  posix_memalign (&(object_location), PAGE_SIZE, PAGE_SIZE); // object_location is the virtual memory address of the object
   object_table.insert(pair <void *, struct object> (object_location, init_object (size_object))); // On an initialization, some memory is allocated to the object and is pushed into memory
   // Protecting the page so that on each access the page faults, protection mechanism is for any access 
-  if (mprotect (object_location, PAGE_SIZE, PROT_NONE) == -1){
-    handle_error("mprotect");
+  if (mprotect ((void *) object_location, PAGE_SIZE, PROT_NONE) == -1){
+	 handle_error("mprotect Error");
   }
   // Initially the page is advised to be not needed
   madvise (object_location, PAGE_SIZE, MADV_DONTNEED);
@@ -179,9 +175,4 @@ void materialize_page (void *va){
   memcpy((void *)((struct page_header*)va + 1), ob.value, ob.size); // copying the object to the materialized page
   // the memory allocated by to store the object in the object table is freed because on materializing an object the page has to be removed from the object table 
   free (ob.value); // this prevents memory leakage 
-}
-
-
-int main (){
-  return 0;
 }
