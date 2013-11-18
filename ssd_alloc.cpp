@@ -100,9 +100,8 @@ void *ssd_oalloc (int num_objects, int size_object){
   // Insert the object in object table
   // Allocating page in memory to the object, currently we implement it for objects of size < 4KB and num_objects = 1
   void *header_location = malloc (sizeof (void *));
-  void *object_location = (struct page_header *) header_location + 1;
   posix_memalign (&(header_location), PAGE_SIZE, PAGE_SIZE); // object_location is the virtual memory address of the object
-  object_table.insert(pair <void *, struct object> (object_location, init_object (size_object))); // On an initialization, some memory is allocated to the object and is pushed into memory
+  object_table.insert(pair <void *, struct object> (header_location, init_object (size_object))); // On an initialization, some memory is allocated to the object and is pushed into memory
   // Protecting the page so that on each access the page faults, protection mechanism is for any access 
   if (mprotect ((void *) header_location, PAGE_SIZE, PROT_NONE) == -1){
     handle_error("mprotect Error");
@@ -110,7 +109,7 @@ void *ssd_oalloc (int num_objects, int size_object){
   // Initially the page is advised to be not needed
   madvise (header_location, PAGE_SIZE, MADV_DONTNEED);
   // Each of the page has a header which denotes the size of the object on the page
-  return (void *) (object_location);
+  return (void *) (page_header_to_object_va (header_location));
 }
 
 // The current eviction policy is based on random selection and eviction of a page from the page buffer.
