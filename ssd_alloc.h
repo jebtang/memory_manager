@@ -35,5 +35,7 @@ int get_free_page(void);
 int select_random_page(void);
 struct object init_object (int);
 struct object get_object_from_header (struct page_header *ph, void *page_address);
+void *page_header_to_object_va (void *ph);
+void *object_va_to_page_header(void *object_va);
 
 #endif
