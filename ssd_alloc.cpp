@@ -9,6 +9,7 @@
 #include <signal.h>
 #include "ssd_alloc.h"
 #include "assert.h"
+#include "string.h"
 
 using namespace std;
 
@@ -95,20 +96,21 @@ struct object init_object(int size){
 
 // Allocates an object and currently stores it in object table
 void *ssd_oalloc (int num_objects, int size_object){
-	assert (num_objects == 1);
+  assert (num_objects == 1);
   // Insert the object in object table
   // Allocating page in memory to the object, currently we implement it for objects of size < 4KB and num_objects = 1
-  void *object_location = malloc (sizeof (void *));
-  posix_memalign (&(object_location), PAGE_SIZE, PAGE_SIZE); // object_location is the virtual memory address of the object
+  void *header_location = malloc (sizeof (void *));
+  void *object_location = (struct page_header *) header_location + 1;
+  posix_memalign (&(header_location), PAGE_SIZE, PAGE_SIZE); // object_location is the virtual memory address of the object
   object_table.insert(pair <void *, struct object> (object_location, init_object (size_object))); // On an initialization, some memory is allocated to the object and is pushed into memory
   // Protecting the page so that on each access the page faults, protection mechanism is for any access 
-  if (mprotect ((void *) object_location, PAGE_SIZE, PROT_NONE) == -1){
-	 handle_error("mprotect Error");
+  if (mprotect ((void *) header_location, PAGE_SIZE, PROT_NONE) == -1){
+    handle_error("mprotect Error");
   }
   // Initially the page is advised to be not needed
-  madvise (object_location, PAGE_SIZE, MADV_DONTNEED);
+  madvise (header_location, PAGE_SIZE, MADV_DONTNEED);
   // Each of the page has a header which denotes the size of the object on the page
-  return (void *) ((struct page_header *) object_location + 1);
+  return (void *) (object_location);
 }
 
 // The current eviction policy is based on random selection and eviction of a page from the page buffer.

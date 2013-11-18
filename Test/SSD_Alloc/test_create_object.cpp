@@ -19,8 +19,8 @@ struct node {
 
 void update_object (){
 	struct node *abc = (struct node *) (ssd_oalloc (1, 4));
-	//abc->value = 2;
-	//assert (abc->value == 2);
+	abc->value = 2;
+	assert (abc->value == 2);
 	printf ("Update Object Passed\n");
 }
 
@@ -28,6 +28,5 @@ int main (){
 	initialize_ssd_alloc ();
 	create_object ();
 	update_object ();
-
 	return 0;
 }
