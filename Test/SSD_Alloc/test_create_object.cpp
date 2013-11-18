@@ -17,6 +17,20 @@ struct node {
 	int value;
 };
 
+void check_materialize_dematerialize_code (void){
+  // Create an object 
+  struct node *abc = (struct node *) (ssd_oalloc (1, 4));
+  // Assign some value  
+  abc->value = 2;
+  // Dematerialize Object
+  void *page_header = object_va_to_page_header ((void *) abc);
+  evict_page (page_header);
+  // Access it again 
+  assert (abc->value == 2);
+  printf ("Materialization Works");
+
+}
+
 void update_object (){
 	struct node *abc = (struct node *) (ssd_oalloc (1, 4));
 	abc->value = 2;
