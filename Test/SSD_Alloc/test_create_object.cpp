@@ -22,10 +22,12 @@ void check_materialize_dematerialize_code (void){
   struct node *abc = (struct node *) (ssd_oalloc (1, 4));
   // Assign some value  
   abc->value = 2;
+  printf ("value = %d\n", abc->value);
   // Dematerialize Object
   void *page_header = object_va_to_page_header ((void *) abc);
   evict_page (page_header);
   // Access it again 
+  printf ("value = %d\n", abc->value);
   assert (abc->value == 2);
   printf ("Materialization Works");
 
@@ -42,5 +44,6 @@ int main (){
 	initialize_ssd_alloc ();
 	create_object ();
 	update_object ();
+	check_materialize_dematerialize_code ();
 	return 0;
 }

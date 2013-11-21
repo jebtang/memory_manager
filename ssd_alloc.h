@@ -23,7 +23,7 @@ struct page_header {
   int object_size;
 };
 
-
+void insert_page_buffer (int index, void *page_address);
 void *ssd_oalloc (int num_objects, int size_objects);
 void ssd_free (void *va_address);
 void seg_handler(int sig, siginfo_t *si, void *unused);

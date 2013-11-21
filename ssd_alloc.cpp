@@ -48,13 +48,13 @@ void insert_object (struct page_header *ph, void *page_address){
   // Build the object from the page header 
   struct object ob = get_object_from_header (ph, page_address);
   // Insert the object into the object table 
-  object_table.insert (pair <void *, struct object> (object_va_to_page_header (page_address), ob));
+  object_table.insert (pair <void *, struct object> (page_address, ob));
 }
 
 // This function gets an object from a page header
 struct object get_object_from_header (struct page_header *ph, void *page_address){
   struct object ob;
-  void *start_object = (void *)((struct page_header *) page_address + 1);
+  void *start_object = page_header_to_object_va (page_address);
   ob.size = ph->object_size;
   ob.value = (void *) malloc (sizeof (ph->object_size));
   memcpy (ob.value, start_object, ph->object_size);
@@ -153,7 +153,7 @@ void evict_page (void *victim_page_address){
   int object_size = ph->object_size;
   // Saving the object back to the object table
   insert_object (ph, victim_page_address);
-  // mprotect the page 
+  // protect the page 
   mprotect (victim_page_address, PAGE_SIZE, PROT_NONE);
   // madvise command called to free this page
     madvise (victim_page_address, PAGE_SIZE, MADV_DONTNEED);
@@ -170,15 +170,22 @@ void materialize_page (void *va){
     printf ("Object with address 0x%lx not found in the object table \n", (long)va);
     exit (EXIT_FAILURE);
   }
-  //  assert(object_table_it != NULL);
   // Getting the object out
   struct object ob = object_table_it->second; 
   // Constructing the page header 
   struct page_header *ph = (struct page_header *) malloc (sizeof(struct page_header)); // has to be freed later on 
   ph->object_size = ob.size; // assigning the object size to the page header
   memcpy(va, ph, sizeof (struct page_header)); // copying the page header to the page in the page buffer
-  free (ph); // the page header is freed here
   memcpy(page_header_to_object_va(va), ob.value, ob.size); // copying the object to the materialized page
   // the memory allocated by to store the object in the object table is freed because on materializing an object the page has to be removed from the object table 
   free (ob.value); // this prevents memory leakage 
+  free (ph); // the page header is freed here
+  insert_page_buffer (free_page_index, va); 
 }
+
+void insert_page_buffer (int index, void *page_address){
+  // Updating the page buffer ptr to the page
+  page_buffer.page_buffer_ptrs[index] = page_address;
+  // Indicating that the page is occupied
+  page_buffer.page_buffer_bitmap[index] = true;
+} 
