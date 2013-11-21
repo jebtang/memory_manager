@@ -65,14 +65,16 @@ struct object get_object_from_header (struct page_header *ph, void *page_address
 // The handler to catch SIGSEGV faults on memory access 
 void seg_handler(int sig, siginfo_t *si, void *unused){
   printf("Got SIGSEGV at address: 0x%lx\n", (long) si->si_addr);
-  printf("Signal Code %d", si->si_code);
+  printf("Signal Code %d\n", si->si_code);
+
   // Calling the materialize page function 
   if (si->si_code == SEGV_ACCERR){
-    materialize_page (si->si_addr);   // materializing the page from the object table 
-    mprotect (si->si_addr, PAGE_SIZE, PROT_READ | PROT_WRITE); // after page materialization the protection levels of the page are changed 
+    void *page_header = object_va_to_page_header(si->si_addr);
+    mprotect (page_header, PAGE_SIZE, PROT_READ | PROT_WRITE); // after page materialization the protection levels of the page are changed    
+    materialize_page (page_header);   // materializing the page from the object table    
   }
   else
-    handle_error ("Segmentation fault");
+    handle_error ("Segmentation fault, Code is different");
 }
 
 void init_ssd_alloc (void){
@@ -151,13 +153,15 @@ void evict_page (void *victim_page_address){
   int object_size = ph->object_size;
   // Saving the object back to the object table
   insert_object (ph, victim_page_address);
+  // mprotect the page 
+  mprotect (victim_page_address, PAGE_SIZE, PROT_NONE);
   // madvise command called to free this page
-  madvise (victim_page_address, PAGE_SIZE, MADV_DONTNEED);
+    madvise (victim_page_address, PAGE_SIZE, MADV_DONTNEED);
 }
 
 // The page materialization function gets an argument as the address of the object and returns the address of the page 
 void materialize_page (void *va){
-  // Getting a free page from the page buffer
+   // Getting a free page from the page buffer
   int free_page_index = get_free_page ();
   // Getting the object our from the object table
   object_table_it = object_table.find (va);
@@ -166,6 +170,7 @@ void materialize_page (void *va){
     printf ("Object with address 0x%lx not found in the object table \n", (long)va);
     exit (EXIT_FAILURE);
   }
+  //  assert(object_table_it != NULL);
   // Getting the object out
   struct object ob = object_table_it->second; 
   // Constructing the page header 
