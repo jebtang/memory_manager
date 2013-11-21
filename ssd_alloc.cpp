@@ -111,7 +111,9 @@ void *ssd_oalloc (int num_objects, int size_object){
   // Initially the page is advised to be not needed
   madvise (header_location, PAGE_SIZE, MADV_DONTNEED);
   // Each of the page has a header which denotes the size of the object on the page
-  return (void *) (page_header_to_object_va (header_location));
+  void *object_location = page_header_to_object_va (header_location));
+  free (header_location);
+  return (object_location);
 }
 
 // The current eviction policy is based on random selection and eviction of a page from the page buffer.
@@ -124,23 +126,37 @@ int select_random_page (void){
 
 // Function which gets a free page from the page buffer 
 int get_free_page (void){
-  int count;
+  int count, victim_page_index = -1;
   void *page_address;
   for (count = 0; count < PAGE_BUFFER_SIZE; count++){
-    if (!(page_buffer.page_buffer_bitmap[count]))
-      return count;
+    if (!(page_buffer.page_buffer_bitmap[count])){
+    	victim_page_index = count;
+    	break;
+    }
   }
+
   // Checking if a free page has been found within the page buffer 
   	assert (count == PAGE_BUFFER_SIZE);
-    printf ("page buffer is filled, evicting a page");
-    // Page eviction is not done as yet, hence evicting the current page 
-    int victim_page_index = select_random_page();
-    void *victim_page_address = page_buffer.page_buffer_ptrs[victim_page_index] ;
-    printf ("victim page address = 0x%lx\n", (long) (victim_page_address));
-    evict_page (victim_page_address);
+  	if (victim_page_index == -1){
+		printf ("page buffer is filled, evicting a page");
+		// Page eviction is not done as yet, hence evicting the current page
+		victim_page_index = select_random_page();
+		void *victim_page_address = page_buffer.page_buffer_ptrs[victim_page_index] ;
+		printf ("victim page address = 0x%lx\n", (long) (victim_page_address));
+		evict_page (victim_page_address);
+  	}
+    remove_page_buffer (victim_page_index);
     // Denoting that a page in page buffer is now empty
-    page_buffer.page_buffer_bitmap [victim_page_index] = true;
     return victim_page_index;
+}
+
+void remove_page_buffer (int index){
+    // Page Removal --> Bitmap Is Set To Not Occupied
+	page_buffer.page_buffer_bitmap [index] = false;
+    // Reducing the number of pages in page buffer
+	page_buffer.pagesInBuffer--;
+	// The number of pages in page buffer > 0
+    assert (page_buffer.pagesInBuffer > 0);
 }
 
 /* This function evicts a victim page from the page buffer: */
@@ -156,7 +172,8 @@ void evict_page (void *victim_page_address){
   // protect the page 
   mprotect (victim_page_address, PAGE_SIZE, PROT_NONE);
   // madvise command called to free this page
-    madvise (victim_page_address, PAGE_SIZE, MADV_DONTNEED);
+  madvise (victim_page_address, PAGE_SIZE, MADV_DONTNEED);
+  free (ph);
 }
 
 // The page materialization function gets an argument as the address of the object and returns the address of the page 
