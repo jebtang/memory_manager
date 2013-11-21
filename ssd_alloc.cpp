@@ -68,8 +68,8 @@ void seg_handler(int sig, siginfo_t *si, void *unused){
   printf("Signal Code %d", si->si_code);
   // Calling the materialize page function 
   if (si->si_code == SEGV_ACCERR){
-    materialize_page (si->si_addr);   // materializing the page from the object table 
-    mprotect (si->si_addr, PAGE_SIZE, PROT_READ | PROT_WRITE); // after page materialization the protection levels of the page are changed 
+    materialize_page (object_va_to_page_header(si->si_addr));   // materializing the page from the object table
+    mprotect (object_va_to_page_header(si->si_addr), PAGE_SIZE, PROT_READ | PROT_WRITE); // after page materialization the protection levels of the page are changed
   }
   else
     handle_error ("Segmentation fault");
@@ -170,10 +170,10 @@ void materialize_page (void *va){
   struct object ob = object_table_it->second; 
   // Constructing the page header 
   struct page_header *ph = (struct page_header *) malloc (sizeof(struct page_header)); // has to be freed later on 
-  ph->object_size = ob.size; // assiging the object size to the page header
+  ph->object_size = ob.size; // assigning the object size to the page header
   memcpy(va, ph, sizeof (struct page_header)); // copying the page header to the page in the page buffer
   free (ph); // the page header is freed here
-  memcpy((void *)((struct page_header*)va + 1), ob.value, ob.size); // copying the object to the materialized page
+  memcpy(page_header_to_object_va(va), ob.value, ob.size); // copying the object to the materialized page
   // the memory allocated by to store the object in the object table is freed because on materializing an object the page has to be removed from the object table 
   free (ob.value); // this prevents memory leakage 
 }
