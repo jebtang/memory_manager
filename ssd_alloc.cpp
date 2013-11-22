@@ -105,8 +105,6 @@ void *ssd_oalloc (int num_objects, int size_object){
   posix_memalign (&(header_location), PAGE_SIZE, PAGE_SIZE); // object_location is the virtual memory address of the object
   
   object_table.insert(pair <void *, struct object> (header_location, init_object (size_object))); // On an initialization, some memory is allocated to the object and is pushed into memory
-
-  printf ("Inserting object location 0x%lx\n", header_location);
   // Protecting the page so that on each access the page faults, protection mechanism is for any access 
   if (mprotect ((void *) header_location, PAGE_SIZE, PROT_NONE) == -1){
     handle_error("mprotect Error");

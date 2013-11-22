@@ -4,13 +4,14 @@
  *  Created on: Nov 16, 2013
  *      Author: ravitandon
  */
-
+#include <iostream>
 #include "b-tree.h"
 #include "stdio.h"
 #include "math.h"
 #include <time.h>
 #include <stdlib.h>
 #include "stdbool.h"
+using namespace std;
 
 struct node *create_tree (int num_nodes, int branching_factor, int *values){
 	struct node *root = (struct node *) malloc (sizeof (struct node));

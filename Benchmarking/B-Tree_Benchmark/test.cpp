@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include "b-tree.h"
 #include "time.h"
+#include <iostream>
+using namespace std;
 
 int main (){
 	int count, array_size = 1024;

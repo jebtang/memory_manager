@@ -1,9 +1,13 @@
-all: b-treeT testT
+all: bTreeSSDT
 
-b-treeT: b-tree.h b-tree.c
-	gcc -o btree b-tree.c
+b-treeT: b-tree.h b-tree.cpp
+	g++ -o btree b-tree.cpp
 
-testT: b-tree.h b-tree.c test.c
-	gcc -o test test.c b-tree.c  	
+testT: b-tree.h b-tree.cpp test.cpp
+	g++ -o test test.cpp b-tree.cpp 	
+
+bTreeSSDT: b-tree.h test.cpp b-tree_ssd.cpp ../../ssd_alloc.cpp 
+	g++ -o btreeSSD test.cpp b-tree_ssd.cpp ../../ssd_alloc.cpp
+
 	
 	
