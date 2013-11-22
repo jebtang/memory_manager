@@ -20,12 +20,10 @@ void init (){
 struct node *create_tree (int num_nodes, int branching_factor, int *values){
 	struct node *root = (struct node *) ssd_oalloc (1, sizeof (struct node));
 	root->value = values[0];
-	printf ("root value = %d\n", values[0]);
-	fflush (stdout);
+	root->left = null;
+	root->right = null;
 	int count;
 	for (count = 1; count < num_nodes; count++){
-		printf ("insert tree, value = %d\n", values[count]);
-		fflush (stdout);
 		insert_tree (root, values[count]);
 	}
 	return root;
@@ -46,20 +44,15 @@ void create_children (int height, struct node *node, int maxHeight){
 void print_tree_in_order (struct node *node){
 	if (node != NULL){
 		printf("%d\t", node->value);
-		fflush (stdout);
 		print_tree_in_order (node->left);
 		print_tree_in_order (node->right);
 	}
 }
 
 void print_tree_pre_order (struct node *node){
-  printf ("In print tree pre order \n");
-  printf ("Accessing 0x%lf\n", node); 
-  fflush (stdout);
 	if (node != NULL){
 		print_tree_pre_order (node->left);
-		printf("%d\t", node->value);
-		fflush (stdout);
+		printf ("%d\t", node->value);
 		print_tree_pre_order (node->right);
 	}
 }
@@ -101,28 +94,18 @@ struct node *create_node (int value){
 }
 
 void insert_tree (struct node*node, int value){
-  printf("Inserting value %d, node value =  %d,  node location = 0x%lx\n",value, node->value, node);
-  fflush (stdout);
 	if (node != null){
 		if (node->value > value){
-		  printf ("Insertion To Left \n");
-		  fflush (stdout);
 			if (node->left == null){
 				node->left = create_node (value);
 			} else {
-			        printf ("Node to left not null\n");
-				fflush (stdout);
 				insert_tree (node->left, value);
 			}
 		} else {
 			if (node->value < value){
-		  printf ("Insertion To Right \n");
-		  fflush (stdout);
 				if (node->right == null){
 					node->right = create_node (value);
 				} else {
-				  printf ("Node to right not null\n");
-				  fflush (stdout);
 				  insert_tree (node->right, value);
 				}
 			}

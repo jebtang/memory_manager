@@ -16,7 +16,7 @@ using namespace std;
 #define handle_error(msg) \
   do {perror (msg); exit(EXIT_FAILURE);} while (0)
 
-#define PAGE_BUFFER_SIZE 10 // The page buffer has 10 pages in memory
+#define PAGE_BUFFER_SIZE 250 // size ~ 1 MB // The page buffer has PAGE_BUFFER_SIZE pages in memory
 int PAGE_SIZE =  sysconf(_SC_PAGE_SIZE); // Each page in page buffer is of size 4KB
 
 struct page_buffer_str {
@@ -64,16 +64,16 @@ struct object get_object_from_header (struct page_header *ph, void *page_address
 
 // The handler to catch SIGSEGV faults on memory access 
 void seg_handler(int sig, siginfo_t *si, void *unused){
-  printf("Got SIGSEGV at address: 0x%lx\n", (long) si->si_addr);
-  printf("Signal Code %d\n", si->si_code);
-  fflush (stdout);
+  //  printf("Got SIGSEGV at address: 0x%lx\n", (long) si->si_addr);
+  // printf("Signal Code %d\n", si->si_code);
+  //fflush (stdout);
   // Calling the materialize page function 
   if (si->si_code == SEGV_ACCERR){
     void *page_header = object_va_to_page_header(si->si_addr);
     mprotect (page_header, PAGE_SIZE, PROT_READ | PROT_WRITE); // after page materialization the protection levels of the page are changed    
     materialize_page (page_header);   // materializing the page from the object table    
-    printf ("materializing page 0x%lx\n", page_header);
-    fflush (stdout);
+    //  printf ("materializing page 0x%lx\n", page_header);
+    // fflush (stdout);
   }
   else
     handle_error ("Segmentation fault, Code is different");
@@ -140,11 +140,11 @@ int get_free_page (void){
   // Checking if a free page has been found within the page buffer 
   // 	assert (count == PAGE_BUFFER_SIZE);
   	if (victim_page_index == -1){
-		printf ("page buffer is filled, evicting a page");
+	  //		printf ("page buffer is filled, evicting a page");
 		// Page eviction is not done as yet, hence evicting the current page
 		victim_page_index = select_random_page();
 		void *victim_page_address = page_buffer.page_buffer_ptrs[victim_page_index] ;
-		printf ("victim page address = 0x%lx\n", (long) (victim_page_address));
+		//	printf ("victim page address = 0x%lx\n", (long) (victim_page_address));
 		evict_page (victim_page_address);
   	}
     remove_page_buffer (victim_page_index);
@@ -194,6 +194,7 @@ void materialize_page (void *va){
   // Constructing the page header 
   struct page_header *ph = (struct page_header *) malloc (sizeof(struct page_header)); // has to be freed later on 
   ph->object_size = ob.size; // assigning the object size to the page header
+  //  printf ("Materializing object, Object Size = %d\n", ob.size);
   memcpy(va, ph, sizeof (struct page_header)); // copying the page header to the page in the page buffer
   memcpy(page_header_to_object_va(va), ob.value, ob.size); // copying the object to the materialized page
   // the memory allocated by to store the object in the object table is freed because on materializing an object the page has to be removed from the object table 

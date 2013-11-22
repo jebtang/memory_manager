@@ -23,6 +23,7 @@ struct node {
 };
 
 void init();
+void finish();
 struct node *create_tree (int num_nodes, int branching_factor, int *values);
 void create_children (int height, struct node *node, int maxHeight);
 void print_tree_in_order (struct node *node);
