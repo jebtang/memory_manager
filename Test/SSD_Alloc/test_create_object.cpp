@@ -26,22 +26,19 @@ void create_list_test (){
   int count;
   struct list_node *list_node_ptr, *root;
   root = (struct list_node *) ssd_oalloc (1, sizeof (struct list_node));
-  printf ("Object Location 0x%lx\n", root);
   root->value = 0;
   list_node_ptr = root;
   for (count = 1; count < 10; count++){
     list_node_ptr->next = (struct list_node *) ssd_oalloc (1, sizeof (struct list_node)); 
-    printf ("Object Location 0x%lx\n", list_node_ptr->next);
+    list_node_ptr->next->value = count;
     list_node_ptr = list_node_ptr->next;
   }
   list_node_ptr = root;
   for (count = 0; count < 10; count++){
-    printf ("count : %d\n", count);
-    printf ("list node prt value %d\n", list_node_ptr->value);
-    fflush (stdout);
     assert (list_node_ptr->value == count);
     list_node_ptr = list_node_ptr->next;
   }
+  printf ("List creation test passed\n");
 }
 
 void check_materialize_dematerialize_code (void){
@@ -69,9 +66,9 @@ void update_object (){
 
 int main (){
 	initialize_ssd_alloc ();
-	create_object ();
-	update_object ();
-	check_materialize_dematerialize_code ();
+	//	create_object ();
+	//	update_object ();
+	//	check_materialize_dematerialize_code ();
 	create_list_test();
 	return 0;
 }
