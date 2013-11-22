@@ -66,12 +66,14 @@ struct object get_object_from_header (struct page_header *ph, void *page_address
 void seg_handler(int sig, siginfo_t *si, void *unused){
   printf("Got SIGSEGV at address: 0x%lx\n", (long) si->si_addr);
   printf("Signal Code %d\n", si->si_code);
-
+  fflush (stdout);
   // Calling the materialize page function 
   if (si->si_code == SEGV_ACCERR){
     void *page_header = object_va_to_page_header(si->si_addr);
     mprotect (page_header, PAGE_SIZE, PROT_READ | PROT_WRITE); // after page materialization the protection levels of the page are changed    
     materialize_page (page_header);   // materializing the page from the object table    
+    printf ("materializing page 0x%lx\n", page_header);
+    fflush (stdout);
   }
   else
     handle_error ("Segmentation fault, Code is different");
@@ -198,6 +200,7 @@ void materialize_page (void *va){
   free (ob.value); // this prevents memory leakage 
   free (ph); // the page header is freed here
   insert_page_buffer (free_page_index, va); 
+  object_table.erase (object_table_it);
 }
 
 void insert_page_buffer (int index, void *page_address){

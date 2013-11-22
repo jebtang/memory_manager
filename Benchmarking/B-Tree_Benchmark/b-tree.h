@@ -15,12 +15,14 @@
 #include "stdbool.h"
 #define null NULL
 
+
 struct node {
 	struct node * left;
 	struct node * right;
 	int value;
 };
 
+void init();
 struct node *create_tree (int num_nodes, int branching_factor, int *values);
 void create_children (int height, struct node *node, int maxHeight);
 void print_tree_in_order (struct node *node);

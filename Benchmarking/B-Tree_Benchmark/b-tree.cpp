@@ -13,6 +13,9 @@
 #include "stdbool.h"
 using namespace std;
 
+void init (){
+}
+
 struct node *create_tree (int num_nodes, int branching_factor, int *values){
 	struct node *root = (struct node *) malloc (sizeof (struct node));
 	root->value = values[0];
