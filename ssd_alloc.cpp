@@ -40,7 +40,7 @@ void *page_header_to_object_va (void *ph){
 
 // Function which converts an object's location to the location where its page header resides
 void *object_va_to_page_header(void *object_va){
-	return (void *)((struct page_header *)object_va - 1);
+  return (void *)((long)object_va & (~(PAGE_SIZE-1)));
 }
 
 // This function updates the object table with a given object header
@@ -101,9 +101,12 @@ void *ssd_oalloc (int num_objects, int size_object){
   assert (num_objects == 1);
   // Insert the object in object table
   // Allocating page in memory to the object, currently we implement it for objects of size < 4KB and num_objects = 1
-  void *header_location = malloc (sizeof (void *));
+  void *header_location;
   posix_memalign (&(header_location), PAGE_SIZE, PAGE_SIZE); // object_location is the virtual memory address of the object
+  
   object_table.insert(pair <void *, struct object> (header_location, init_object (size_object))); // On an initialization, some memory is allocated to the object and is pushed into memory
+
+  printf ("Inserting object location 0x%lx\n", header_location);
   // Protecting the page so that on each access the page faults, protection mechanism is for any access 
   if (mprotect ((void *) header_location, PAGE_SIZE, PROT_NONE) == -1){
     handle_error("mprotect Error");
@@ -111,8 +114,7 @@ void *ssd_oalloc (int num_objects, int size_object){
   // Initially the page is advised to be not needed
   madvise (header_location, PAGE_SIZE, MADV_DONTNEED);
   // Each of the page has a header which denotes the size of the object on the page
-  void *object_location = page_header_to_object_va (header_location));
-  free (header_location);
+  void *object_location = page_header_to_object_va (header_location);
   return (object_location);
 }
 
@@ -136,7 +138,7 @@ int get_free_page (void){
   }
 
   // Checking if a free page has been found within the page buffer 
-  	assert (count == PAGE_BUFFER_SIZE);
+  // 	assert (count == PAGE_BUFFER_SIZE);
   	if (victim_page_index == -1){
 		printf ("page buffer is filled, evicting a page");
 		// Page eviction is not done as yet, hence evicting the current page
@@ -156,7 +158,7 @@ void remove_page_buffer (int index){
     // Reducing the number of pages in page buffer
 	page_buffer.pagesInBuffer--;
 	// The number of pages in page buffer > 0
-    assert (page_buffer.pagesInBuffer > 0);
+    assert (page_buffer.pagesInBuffer >= 0);
 }
 
 /* This function evicts a victim page from the page buffer: */
@@ -205,4 +207,6 @@ void insert_page_buffer (int index, void *page_address){
   page_buffer.page_buffer_ptrs[index] = page_address;
   // Indicating that the page is occupied
   page_buffer.page_buffer_bitmap[index] = true;
+  // Incrementing the size of the page buffer
+  page_buffer.pagesInBuffer++;
 } 
