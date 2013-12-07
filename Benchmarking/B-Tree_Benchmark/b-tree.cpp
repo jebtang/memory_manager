@@ -40,7 +40,7 @@ void create_children (int height, struct node *node, int maxHeight){
 
 void print_tree_in_order (struct node *node){
 	if (node != NULL){
-		printf("%d\t", node->value);
+	  //		printf("%d\t", node->value);
 		print_tree_in_order (node->left);
 		print_tree_in_order (node->right);
 	}
@@ -49,7 +49,7 @@ void print_tree_in_order (struct node *node){
 void print_tree_pre_order (struct node *node){
 	if (node != NULL){
 		print_tree_pre_order (node->left);
-		printf("%d\t", node->value);
+		//		printf("%d\t", node->value);
 		print_tree_pre_order (node->right);
 	}
 }
