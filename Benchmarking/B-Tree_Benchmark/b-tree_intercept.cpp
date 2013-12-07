@@ -50,8 +50,8 @@ access ((void *)node ,1);
 
 void print_tree_in_order (struct node *node){
 	if (node != NULL){
-		printf("%d\t", node->value);
-		access ((void *)node ,1);
+	  //		printf("%d\t", node->value);
+	  //	access ((void *)node ,1);
 		print_tree_in_order (node->left);
 		access ((void *)node ,1);
 		print_tree_in_order (node->right);
@@ -63,8 +63,8 @@ void print_tree_pre_order (struct node *node){
 	if (node != NULL){
 		print_tree_pre_order (node->left);
 		access ((void *)node ,1);
-		printf("%d\t", node->value);
-		access ((void *)node ,1);
+		//		printf("%d\t", node->value);
+		//	access ((void *)node ,1);
 		print_tree_pre_order (node->right);
 		access ((void *)node ,1);
 	}

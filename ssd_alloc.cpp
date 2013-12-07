@@ -4,7 +4,7 @@
 #include "errno.h"
 #include <sys/mman.h>
 #include <iostream>
-#include <map>
+#include <unordered_map>
 #include <unistd.h>
 #include <signal.h>
 #include "ssd_alloc.h"
@@ -30,8 +30,8 @@ struct page_buffer_str {
 struct page_buffer_str page_buffer;
 struct sigaction sa;
 
-map <void*, struct object> object_table; // This is the object table which stores the exact location of objects to fetch them
-std::map<void *, struct object>::iterator object_table_it; // Iterator of the map
+unordered_map <void*, struct object> object_table; // This is the object table which stores the exact location of objects to fetch them
+std::unordered_map<void *, struct object>::iterator object_table_it; // Iterator of the map
 
 // Function which converts a page header address to object's location
 void *page_header_to_object_va (void *ph){

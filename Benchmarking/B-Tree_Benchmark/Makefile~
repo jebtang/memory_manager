@@ -1,5 +1,18 @@
 all: testT_create bTreeSSDT_create bTreeIntercept_create testT_traversal bTreeSSDT_traversal bTreeIntercept_traversal testT_read bTreeSSDT_read bTreeIntercept_read
 
+<<<<<<< HEAD
+b-treeT: b-tree.h b-tree.cpp
+	g++ -g -o btree b-tree.cpp
+
+testT: b-tree.h b-tree.cpp test.cpp 
+	g++ -g -o test test.cpp b-tree.cpp 	
+
+bTreeSSDT: b-tree.h test.cpp b-tree_ssd.cpp ../../ssd_alloc.cpp 
+	g++ -g -o btreeSSD test.cpp b-tree_ssd.cpp ../../ssd_alloc.cpp
+
+bTreeIntercept: b-tree.h b-tree_intercept.cpp test.cpp memory_monitor.h memory_monitor2.cpp
+	g++ -g -std=c++0x -o testIntercept test.cpp b-tree_intercept.cpp memory_monitor2.cpp
+=======
 testT_create: b-tree.h b-tree.cpp test_create.cpp 
 	g++ -g -o test_create test_create.cpp b-tree.cpp 	
 
