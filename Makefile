@@ -12,6 +12,9 @@ clean:
 output: sample_out.cpp memory_monitor.cpp 
 	g++ -g -std=c++0x -o profile sample_out.cpp memory_monitor.cpp 
 
+output2: sample_out.cpp memory_monitor.cpp 
+	g++ -g -std=c++0x -o profile sample_out.cpp memory_monitor2.cpp 
+
 ssd_alloc: sample_ssd_alloc.cpp ssd_alloc.cpp
 	g++ -o ssd_alloc sample_ssd_alloc.cpp ssd_alloc.cpp
 
