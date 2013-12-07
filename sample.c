@@ -13,6 +13,8 @@ void construct_tree (struct node *root, int number_nodes){
     current_node->next->value = ++count;
     current_node = current_node->next;
   }
+   
+   current_node->next = NULL;
 }
 
 void traverse_tree (struct node *root){

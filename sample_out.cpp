@@ -19,6 +19,8 @@ access ((void *)current_node->next ,1);
 access ((void *)current_node ,1);
 access ((void *)current_node ,1);
   }
+       current_node->next = NULL;
+access ((void *)current_node ,1);
 }
 
 void traverse_tree (struct node *root){
