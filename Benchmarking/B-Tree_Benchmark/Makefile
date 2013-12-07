@@ -1,4 +1,4 @@
-all: testT bTreeSSDT
+all: testT bTreeSSDT bTreeIntercept
 
 b-treeT: b-tree.h b-tree.cpp
 	g++ -o btree b-tree.cpp
@@ -9,5 +9,5 @@ testT: b-tree.h b-tree.cpp test.cpp
 bTreeSSDT: b-tree.h test.cpp b-tree_ssd.cpp ../../ssd_alloc.cpp 
 	g++ -o btreeSSD test.cpp b-tree_ssd.cpp ../../ssd_alloc.cpp
 
-	
-	
+bTreeIntercept: b-tree.h b-tree_intercept.cpp test.cpp memory_monitor.h memory_monitor.cpp
+	g++ -o testIntercept test.cpp b-tree_intercept.cpp memory_monitor.cpp
