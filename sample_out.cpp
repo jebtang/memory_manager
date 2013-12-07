@@ -42,7 +42,7 @@ int main(){
 access ((void *)root ,1);
   root->value = 1;
 access ((void *)root ,1);
-  construct_tree (root, 100);
+  construct_tree (root, 25000);
 access ((void *)root ,1);
   traverse_tree (root);
 access ((void *)root ,1);
