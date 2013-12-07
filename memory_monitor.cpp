@@ -1,9 +1,9 @@
 #include <iostream>
-#include <map>
+#include <unordered_map>
 #include "memory_monitor.h"
 using namespace std;
-map <void *, int> memory_map;
-map <void *, int> :: iterator it;
+unordered_map <void *, int> memory_map;
+unordered_map <void *, int> :: iterator it;
 
 void print_memory(){
   for (it = memory_map.begin(); it != memory_map.end(); it++){
