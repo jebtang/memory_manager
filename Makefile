@@ -1,4 +1,4 @@
-all: sample interceptor output test
+all: sample interceptor output output2 test
 
 sample: sample.c
 	gcc -o sample sample.c
