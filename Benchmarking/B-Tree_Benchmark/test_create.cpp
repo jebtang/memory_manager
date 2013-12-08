@@ -26,6 +26,6 @@ int main (int argc, char **argv){
 	seconds  = end.tv_sec  - start.tv_sec;
 	useconds = end.tv_usec - start.tv_usec;
 	mtime = ((seconds) * 1000 + useconds/1000.0) + 0.5;
-	printf("%ld\n", mtime);
+	printf("%ld", mtime);
 	return 0;
 }
