@@ -16,7 +16,7 @@ using namespace std;
 #define handle_error(msg) \
   do {perror (msg); exit(EXIT_FAILURE);} while (0)
 
-#define PAGE_BUFFER_SIZE 250 // size ~ 1 MB // The page buffer has PAGE_BUFFER_SIZE pages in memory
+#define PAGE_BUFFER_SIZE 250*25 // size ~ 10 MB // The page buffer has PAGE_BUFFER_SIZE pages in memory
 int PAGE_SIZE =  sysconf(_SC_PAGE_SIZE); // Each page in page buffer is of size 4KB
 
 struct page_buffer_str {
