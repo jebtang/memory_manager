@@ -7,6 +7,7 @@ Test_Name_Array=("testIntercept_create" "testIntercept_read" "testIntercept_trav
 
 output_file_name=finalout.txt
 temp_valgrind_file_name=valgrind_output.temp
+temp_file_name=random.temp
 
 #remove final output file if it exists
 if [ -e $output_file_name ] ; then
@@ -22,12 +23,23 @@ do
 	echo 'Test Name:'$test', Object Size:'$item >> $output_file_name
 
 	#Ignore whitespace, of which there seems to be an arbitrary amount, between the first and second word.
-	grep -e 'D\s*refs' -e 'D1\s*misses:' -e 'LLd misses' -e 'D1\s*miss rate:' -e 'LLd miss rate' < $temp_valgrind_file_name >> $output_file_name
+	((grep -e 'D\s*refs' -e 'D1\s*misses:' < $temp_valgrind_file_name) | awk '{print $4}') >> $temp_file_name
 
+	
+	line_output=""
+	for i in 1 2
+	do 
+		read line
+		line_output="$line:$line_output"
+	done < $temp_file_name
+
+	echo $line_output >> $output_file_name
 	echo "" >> $output_file_name
 	rm $temp_valgrind_file_name
+	rm $temp_file_name
 	done
 done
 
+rm cachegrind.out.*
 #print the final output
 cat $output_file_name
