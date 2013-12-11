@@ -12,7 +12,7 @@ int main (int argc, char **argv){
         struct timeval start, end;
         long mtime, seconds, useconds;  
         init ();
-	int count, array_size = 1000*25;
+	int count, array_size = 1000;
 	if (argc > 1)
 	  array_size = atoi (argv[1]);
 	int array[array_size];
