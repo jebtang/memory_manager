@@ -32,6 +32,7 @@ struct sigaction sa;
 
 unordered_map <void*, struct object> object_table; // This is the object table which stores the exact location of objects to fetch them
 std::unordered_map<void *, struct object>::iterator object_table_it; // Iterator of the map
+std::queue <void *> fifo_list; // This is a list, which maintains all the objects in the page buffer in FIFO order
 
 // Function which converts a page header address to object's location
 void *page_header_to_object_va (void *ph){
@@ -49,6 +50,8 @@ void insert_object (struct page_header *ph, void *page_address){
   struct object ob = get_object_from_header (ph, page_address);
   // Insert the object into the object table 
   object_table.insert (pair <void *, struct object> (page_address, ob));
+  // Inserting the object in the fifo list of the page buffer 
+  fifo_list.push (page_address);
 }
 
 // This function gets an object from a page header
@@ -60,7 +63,6 @@ struct object get_object_from_header (struct page_header *ph, void *page_address
   memcpy (ob.value, start_object, ph->object_size);
   return ob;
 }
-
 
 // The handler to catch SIGSEGV faults on memory access 
 void seg_handler(int sig, siginfo_t *si, void *unused){
@@ -142,10 +144,12 @@ int get_free_page (void){
   	if (victim_page_index == -1){
 	  //		printf ("page buffer is filled, evicting a page");
 		// Page eviction is not done as yet, hence evicting the current page
-		victim_page_index = select_random_page();
-		void *victim_page_address = page_buffer.page_buffer_ptrs[victim_page_index] ;
+		//victim_page_index = select_random_page();
+		//void *victim_page_address = page_buffer.page_buffer_ptrs[victim_page_index] ;
 		//	printf ("victim page address = 0x%lx\n", (long) (victim_page_address));
-		evict_page (victim_page_address);
+	  void *victim_page_address = fifo_list.front ();
+	  fifo_list.pop();
+	  evict_page (victim_page_address);
   	}
     remove_page_buffer (victim_page_index);
     // Denoting that a page in page buffer is now empty

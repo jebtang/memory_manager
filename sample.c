@@ -31,7 +31,7 @@ int main(){
   struct node *root = (struct node *) malloc (sizeof(struct node));
   root->value = 1;
   construct_tree (root, 100000);
-  traverse_tree (root);
+  //  traverse_tree (root);
   return 0;
 }
 

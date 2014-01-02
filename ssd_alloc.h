@@ -7,6 +7,7 @@
 #include <sys/mman.h>
 #include <iostream>
 #include <map>
+#include <queue>
 #include <unistd.h>
 #include <signal.h>
 //#include <sys/siginfo.h>
