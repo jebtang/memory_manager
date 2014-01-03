@@ -12,6 +12,8 @@
 #include <stdlib.h>
 #include "stdbool.h"
 #include "../../ssd_alloc.h"
+#include <unistd.h>
+#include <signal.h>
 
 void init (){
   init_ssd_alloc();
@@ -19,6 +21,11 @@ void init (){
 
 struct node *create_tree (int num_nodes, int branching_factor, int *values){
 	struct node *root = (struct node *) ssd_oalloc (1, sizeof (struct node));
+	if (root == NULL){
+	  printf ("Root Null\n");
+	  fflush (stdout);
+	  exit(-1);
+	  }
 	root->value = values[0];
 	root->left = null;
 	root->right = null;

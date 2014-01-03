@@ -51,7 +51,7 @@ void insert_object (struct page_header *ph, void *page_address){
   // Insert the object into the object table 
   object_table.insert (pair <void *, struct object> (page_address, ob));
   // Inserting the object in the fifo list of the page buffer 
-  fifo_list.push (page_address);
+  //  fifo_list.push (page_address);
 }
 
 // This function gets an object from a page header
@@ -66,14 +66,16 @@ struct object get_object_from_header (struct page_header *ph, void *page_address
 
 // The handler to catch SIGSEGV faults on memory access 
 void seg_handler(int sig, siginfo_t *si, void *unused){
-  //  printf("Got SIGSEGV at address: 0x%lx\n", (long) si->si_addr);
+  // printf("Got SIGSEGV at address: 0x%lx\n", (long) si->si_addr);
   // printf("Signal Code %d\n", si->si_code);
-  //fflush (stdout);
+  //  fflush (stdout);
   // Calling the materialize page function 
   if (si->si_code == SEGV_ACCERR){
     void *page_header = object_va_to_page_header(si->si_addr);
     mprotect (page_header, PAGE_SIZE, PROT_READ | PROT_WRITE); // after page materialization the protection levels of the page are changed    
     materialize_page (page_header);   // materializing the page from the object table    
+    // pushing the page into the fifo list 
+    fifo_list.push(page_header);
     //  printf ("materializing page 0x%lx\n", page_header);
     // fflush (stdout);
   }
@@ -117,6 +119,12 @@ void *ssd_oalloc (int num_objects, int size_object){
   madvise (header_location, PAGE_SIZE, MADV_DONTNEED);
   // Each of the page has a header which denotes the size of the object on the page
   void *object_location = page_header_to_object_va (header_location);
+  if (object_location == NULL){
+    printf("ssd alloc returns null\n");
+    fflush (stdout);
+    exit (-1);
+
+  }
   return (object_location);
 }
 
@@ -144,11 +152,12 @@ int get_free_page (void){
   	if (victim_page_index == -1){
 	  //		printf ("page buffer is filled, evicting a page");
 		// Page eviction is not done as yet, hence evicting the current page
-		//victim_page_index = select_random_page();
-		//void *victim_page_address = page_buffer.page_buffer_ptrs[victim_page_index] ;
+	  //		victim_page_index = select_random_page();
+	  //		void *victim_page_address = page_buffer.page_buffer_ptrs[victim_page_index] ;
 		//	printf ("victim page address = 0x%lx\n", (long) (victim_page_address));
 	  void *victim_page_address = fifo_list.front ();
 	  fifo_list.pop();
+		
 	  evict_page (victim_page_address);
   	}
     remove_page_buffer (victim_page_index);
