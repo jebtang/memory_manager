@@ -16,7 +16,11 @@ void print_memory(){
  
  int new_value;
  void access(void *memory_location, int count){
-    it = memory_map.find (memory_location);
+   int *x = ((int *)memory_location-1);
+   (*x)++;
+   return;
+
+   it = memory_map.find (memory_location);
     if (it == memory_map.end())
       new_value=count;
     else {

@@ -17,8 +17,16 @@ void finish (){
   print_memory();
 }
 
+void *n_malloc (std::size_t size_object){
+  int *object_header = (int *) malloc (sizeof (int)); // Assigning each object with a header
+  *object_header=0; // Initializing the value of the object header 
+  void *object = malloc (size_object); // 
+  return object;
+}
+
+
 struct node *create_tree (int num_nodes, int branching_factor, int *values){
-	struct node *root = (struct node *) malloc (sizeof (struct node));
+	struct node *root = (struct node *) n_malloc (sizeof (struct node));
 	root->value = values[0];
 	int count;
 	for (count = 1; count < num_nodes; count++){
@@ -106,7 +114,7 @@ if (node != null){
 }
 
 struct node *create_node (int value){
-	struct node *new_node = (struct node *) malloc (sizeof (struct node));
+	struct node *new_node = (struct node *) n_malloc (sizeof (struct node));
 	new_node->value = value;
 	new_node->left = NULL;
 	new_node->right = NULL;
