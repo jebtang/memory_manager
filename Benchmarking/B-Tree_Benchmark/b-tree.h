@@ -33,5 +33,5 @@ void update_tree (struct node*node, int old_value, int new_value);
 void insert_tree (struct node*node, int value);
 struct node *create_node (int value);
 void insert_tree (struct node*node, int value);
-
+void destroy_tree (struct node*node);
 #endif /* B_TREE_H_ */

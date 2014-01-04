@@ -1,12 +1,8 @@
 #include <stdio.h>
 #include "b-tree.h"
 #include "time.h"
-//#include <iostream>
-//#include "../../ssd_alloc.h"
 #include <sys/time.h>
 #include <unistd.h>
-
-//using namespace std;
 
 int main (int argc, char **argv){  
         struct timeval start, end;
@@ -24,7 +20,7 @@ int main (int argc, char **argv){
 	else 
 	  read_array_size = array_size;
 	int read_array[read_array_size];
-	int num_iterations = 10;
+	int num_iterations = 25;
 	long sum_time = 0, ave_time, max_time = 0, min_time;
 	int current_iteration = 0;
 	while (current_iteration < num_iterations){

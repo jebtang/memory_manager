@@ -7,13 +7,14 @@
     cout << "memory location = " << it->first << ": access count" << it->second << endl;
   }
   }*/
- void access(void *memory_location, int count){
+void access(void *memory_location, int count){
    int *x = ((int *)memory_location-1);
    (*x)++;
    return;
 }
 
-/*  void define(void * memory_location){
-    memory_map.insert (pair <void *, int> (memory_location, 1));
-    return;
-    }*/
+int getAccessCount (void *object_address){
+  int *header_address = (int *)((int *) object_address - 1);
+  int count = *header_address;
+  return count;
+}

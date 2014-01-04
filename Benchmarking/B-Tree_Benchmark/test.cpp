@@ -20,7 +20,7 @@ int main (){
 	  array[count] = rand();
 	}
 	struct node *root = create_tree (array_size, 2, array);
-	//	print_tree_pre_order (root);
+       
 	gettimeofday(&end, NULL);
 	seconds  = end.tv_sec  - start.tv_sec;
 	useconds = end.tv_usec - start.tv_usec;

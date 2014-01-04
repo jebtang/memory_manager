@@ -18,6 +18,13 @@
 void init (){
   init_ssd_alloc();
 }
+void destroy_tree (struct node *node){
+  if (node != NULL){
+    destroy_tree(node->left);
+    destroy_tree(node->right);
+    free(node);
+  }
+}
 
 struct node *create_tree (int num_nodes, int branching_factor, int *values){
 	struct node *root = (struct node *) ssd_oalloc (1, sizeof (struct node));

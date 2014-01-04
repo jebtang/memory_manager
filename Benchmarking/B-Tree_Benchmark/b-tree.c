@@ -11,10 +11,19 @@
 #include <stdlib.h>
 #include "stdbool.h"
 
-/*int main (){
-  return 0;
-  }*/
+
 void init (){
+}
+
+void destroy_tree (struct node *node){
+  if (node != NULL){
+    destroy_tree(node->left);
+    destroy_tree(node->right);
+    //    node->left = NULL;
+    //  node->right = NULL;
+    printf ("Freeing Node : 0x%lx", (long unsigned int) node);
+    free (node);
+  }
 }
 
 struct node *create_tree (int num_nodes, int branching_factor, int *values){
@@ -46,6 +55,8 @@ void print_tree_in_order (struct node *node){
 		print_tree_in_order (node->right);
 	}
 }
+
+
 
 void print_tree_pre_order (struct node *node){
 	if (node != NULL){
@@ -107,4 +118,11 @@ void insert_tree (struct node*node, int value){
 			}
 		}
 	}
+}
+
+int main (){
+  int ar[] = {3,2,1};
+  struct node *root = create_tree (3, 2, ar);
+    destroy_tree (root);
+  return 0;
 }

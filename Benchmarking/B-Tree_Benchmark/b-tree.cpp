@@ -46,6 +46,14 @@ void print_tree_in_order (struct node *node){
 	}
 }
 
+void destroy_tree (struct node *node){
+  if (node != NULL){
+    destroy_tree(node->left);
+    destroy_tree(node->right);
+    free(node);
+  }
+}
+
 void print_tree_pre_order (struct node *node){
 	if (node != NULL){
 		print_tree_pre_order (node->left);

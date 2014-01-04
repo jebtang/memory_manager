@@ -1,8 +1,0 @@
-#include <iostream>
-#include <stdlib.h>
-#include "p_malloc.h"
-using namespace std;
-int main (){
-  int *abc = (int *) p_malloc (4);
-  return 0;
-}
