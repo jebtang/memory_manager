@@ -1,3 +1,19 @@
 \section{Related Work}
+\paragraph{}
+Memory intensive applications (such as in-memory web server caches \cite{}) have larger memory requirements for optimal performance. These applications generally serve as accelerators for various web servers. Such applications are acutely limited by the lack of scalability of available DRAM memory \cite{}. Therefore, alternate memory solutions such as Storage Class Memories (SCM) could augment the DRAM either by being available as disk caches or slower DRAMs. \cite{} % Cite Data for the upcoming memory 
+
+\paragraph{}%Description of Storage Class Memories 
+One of the requirements of {\emph{memory tiering}} would be {\emph{transparent}} movement of application data between the different layers of hierarchy \cite{Chameleon}. The adaptability of such {\emph{hybrid memory}} %  Explain
+design hierarchies would depend on the unobtrusiveness of software technologies which support these memories. Proposals such as Chameleon {\cite{Chameleon}} and SSDAlloc {\cite{SSDAlloc}} suggest designs wherein the applications require minimal changes. One of the key requirements of such a memory hierarchy is tracing object level access. We discuss techniques which monitor fine grained access patterns in the subsequent subsection.
+
+\paragraph{Fine grained access mechanism}
+{\cite{Chameleon}} and SSDAlloc {\cite{SSDAlloc}} use an {\emph{OPP(object per page)}} model and {\emph{page protection}} mechanism to monitor fine grained access patterns. {\emph{HAC (Hybrid Adaptive Caching for Distributed Storage Systems)}} {\cite{HAC}} is a dynamic caching system which uses {\emph{indirection}} mechanism to refer to smaller $4$ byte objects. Indirection technique (those using handles) trade off transparency for simplicity (from the system designer's perspective).
+
+\paragraph{}%Description of Chameleon and SSDAlloc 
+{\emph{SSDAlloc}}  
+
+
+\paragraph{}%Description of Internet Access Patterns - where could such applications be useful (heavy tailed object distribution)
+
 \label{sec:related}
 
