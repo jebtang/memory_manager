@@ -1,3 +1,7 @@
-\section{Conclusions}
+\section{Conclusion}
 \label{sec:conclusion}
 
+\paragraph{}
+This paper presents Tracer, an instrumentation based lightweight, transparent memory tracing mechanism for C applications. This technique instruments object accesses with additional library calls, augments object structures with transparent headers and provides useful interfaces to application developers for getting useful information about memory access patterns. We also implement a memory protection based mechanism based on SSDAlloc \cite{SSDAlloc} and perform microbenchmark studies binary trees. We evaluated a prototype implementation of Tracer and observed reasonable overheads of $28\%$ and $40\%$ over non-modified C code for creation and read heavy workloads. As compared to the page protection mechanism, Tracer improves the average performance by $12\%$ and $6.28\%$ for read and update heavy workloads. We observe that for create and traversal workloads, tracer results in a reduction of 2-3 orders of magnitude over page protection mechanisms. This is because creation and traversal workloads have memory footprints larger than available page buffer sizes and page protection mechanisms (such as SSDAlloc), incur heavy overheads in control transfer to kernel due to page protection, page eviction and materialization. 
+\paragraph{}
+The source code of Tracer's prototype is available at \url{http://bit.ly/1gvF1Mk}.

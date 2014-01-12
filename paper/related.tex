@@ -1,19 +1,12 @@
 \section{Related Work}
-\paragraph{}
-Memory intensive applications (such as in-memory web server caches \cite{}) have larger memory requirements for optimal performance. These applications generally serve as accelerators for various web servers. Such applications are acutely limited by the lack of scalability of available DRAM memory \cite{}. Therefore, alternate memory solutions such as Storage Class Memories (SCM) could augment the DRAM either by being available as disk caches or slower DRAMs. \cite{} % Cite Data for the upcoming memory 
-
-\paragraph{}%Description of Storage Class Memories 
-One of the requirements of {\emph{memory tiering}} would be {\emph{transparent}} movement of application data between the different layers of hierarchy \cite{Chameleon}. The adaptability of such {\emph{hybrid memory}} %  Explain
-design hierarchies would depend on the unobtrusiveness of software technologies which support these memories. Proposals such as Chameleon {\cite{Chameleon}} and SSDAlloc {\cite{SSDAlloc}} suggest designs wherein the applications require minimal changes. One of the key requirements of such a memory hierarchy is tracing object level access. We discuss techniques which monitor fine grained access patterns in the subsequent subsection.
-
+\label{sec:related}
 \paragraph{Fine grained access mechanism}
 {\cite{Chameleon}} and SSDAlloc {\cite{SSDAlloc}} use an {\emph{OPP(object per page)}} model and {\emph{page protection}} mechanism to monitor fine grained access patterns. {\emph{HAC (Hybrid Adaptive Caching for Distributed Storage Systems)}} {\cite{HAC}} is a dynamic caching system which uses {\emph{indirection}} mechanism to refer to smaller $4$ byte objects. Indirection technique (those using handles) trade off transparency for simplicity (from the system designer's perspective).
 
-\paragraph{}%Description of Chameleon and SSDAlloc 
-{\emph{SSDAlloc}}  
+\paragraph{Description of Chameleon and SSDAlloc}
+{\emph{SSDAlloc}}
 
+SSDAlloc monitors fine grained access patterns through the use of the Object Per Page model, where each object is placed in its own page of virtual memory. SSDAlloc's DRAM is split into an object cache (which composes most of DRAM), and a Page Buffer that holds the set of materialized pages currently being used by the application (where each object is stored in its own physical page). SSDAlloc protects all virtual memory that it allocates, so any memory access for an unmaterialized page generates a page fault and is sent to SSDAlloc's interrupt handler. The handler would then pull the object from the object cache or the SSD, unprotect it and materialize it in the page buffer, and send it back to the application. This allows SSDAlloc to track memory accesses at an object level granularity as opposed to a page level granularity, since each virtual memory page access can be directly mapped to a single object access. The downside to this approach is that since materialized pages in the page buffer are unprotected, SSDAlloc cannot track memory accesses for materialized pages. This restriction resulted in SSDAlloc implementing a FIFO eviction policy for the page buffer, since LRU is infeasible if materialized page accesses cannot be monitored. SSDAlloc can be modified to page fault for materialized pages, but it isn't well suited for it since doing so would significantly affect performance due to the increased amount of page fault handling. Tracer allows the user to track the total number of object accesses, which may prove useful when implementing policies such as a LRU scheduler.
 
-\paragraph{}%Description of Internet Access Patterns - where could such applications be useful (heavy tailed object distribution)
-
-\label{sec:related}
+Chameleon improves on SSDAlloc's design by removing the need to split DRAM into a cache and page buffer entirely. Each object is still put into a single virtual page, but the virtual pages are partitioned into a set of object sized chunks, and the object is randomly placed into one of these chunks in the virtual page. Since these chunks can be mapped to a chunks in a physical page, a single physical page can store objects from multiple virtual pages. These virtual pages are tracked in two FIFO queues, one for active pages and one for inactive pages. In order to track object usage, Chameleon uses a kernel module that modifies the page table, and more specifically updates a "recency bit" whenever an object is accessed. Whenever a new page is added to the active queue, Chameleon checks that bit for the tail of the queue, and if it hasn't been set, moves it to the inactive queue. If the system needs to evict a page, it checks the tail of the inactive queue, and evicts the first page that hasn't had that bit reset. One issue here is that Chameleon isn't as transparent as Tracer in that it needs to install a kernel module in order to function properly.
 
