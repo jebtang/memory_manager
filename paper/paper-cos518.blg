@@ -3,44 +3,56 @@ Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
 The top-level auxiliary file: paper-cos518.aux
 The style file: abbrvnat.bst
 Database file #1: local.bib
-You've used 1 entry,
+Warning--to sort, need author or key in gdb
+Warning--empty author in gdb
+Warning--empty title in gdb
+Warning--empty journal in gdb
+Warning--empty year in gdb
+Warning--empty year in gdb
+Warning--can't use both volume and number fields in castro1997hac
+Warning--empty journal in newsome2005dynamic
+Warning--empty journal in payerlightweight
+Warning--empty year in payerlightweight
+Warning--empty year in payerlightweight
+You've used 7 entries,
             2773 wiz_defined-function locations,
-            598 strings with 4775 characters,
-and the built_in function-call counts, 481 in all, are:
-= -- 37
-> -- 30
-< -- 0
-+ -- 10
-- -- 9
-* -- 40
-:= -- 79
-add.period$ -- 3
-call.type$ -- 1
-change.case$ -- 6
-chr.to.int$ -- 1
-cite$ -- 2
-duplicate$ -- 24
-empty$ -- 40
-format.name$ -- 10
-if$ -- 96
+            634 strings with 5624 characters,
+and the built_in function-call counts, 3155 in all, are:
+= -- 285
+> -- 153
+< -- 7
++ -- 52
+- -- 45
+* -- 247
+:= -- 448
+add.period$ -- 20
+call.type$ -- 7
+change.case$ -- 35
+chr.to.int$ -- 7
+cite$ -- 26
+duplicate$ -- 164
+empty$ -- 276
+format.name$ -- 59
+if$ -- 679
 int.to.chr$ -- 1
 int.to.str$ -- 1
-missing$ -- 1
-newline$ -- 13
-num.names$ -- 4
-pop$ -- 16
+missing$ -- 7
+newline$ -- 40
+num.names$ -- 24
+pop$ -- 97
 preamble$ -- 1
-purify$ -- 5
+purify$ -- 29
 quote$ -- 0
-skip$ -- 13
+skip$ -- 121
 stack$ -- 0
-substring$ -- 2
-swap$ -- 2
-text.length$ -- 0
+substring$ -- 93
+swap$ -- 25
+text.length$ -- 3
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 11
-warning$ -- 0
-while$ -- 3
+type$ -- 77
+warning$ -- 11
+while$ -- 26
 width$ -- 0
-write$ -- 20
+write$ -- 89
+(There were 11 warnings)

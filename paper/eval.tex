@@ -7,7 +7,7 @@ In order to measure the performance of the we perform a microbenchmark study on 
 We perform a comparative analysis and compare Tracers overhead with the performance of the implementation of a binary tree using an unmodified implementation in C (we call it {\emph{vanilla C implementation}}). We also implement a page protection mechanism, similar to the mechanism used in \cite{SSDAlloc} for tracking objects. Our primary objective behind the study is to measure the overall overhead of our memory monitoring mechanism and compare it with a page protection mechanism. The implementation of the page protection mechanism uses a page buffer size of {\emph{25MB}} (as suggested in \cite{SSDAlloc}).
 
 \paragraph{B-Tree Creation Tests}
-The first test measures the overall overhead that Tracer has while monitoring the access to objects. We create trees containing nodes ranging from 2500 to 25000 nodes. The experimental results indicate that Tracer invokes an overhead of around 20\% over vanilla C implementation. Page protection mechanism has an overhead of 3 orders of magnitude (refer to Fig. \ref{fig:create.png}). The average time for creation of a binary tree with vanilla C implementation is around 3.77 milliseconds (over the different number of nodes), 4.5 milliseconds for Tracer and over 1 second for page protection mechanism. One of the primary reasons for the poor performance of page protection mechanism is the overheads involved in the eviction of an object from the page table and its subsequent insertion in the object table. This requires a system call (triggered due to access to a protected page), eviction of page from the page buffer (overheads due to memory copy), page materialization (requiring memory copy from the object table to the page buffer and a look up in the object table). 
+The first test measures the overall overhead that Tracer has while monitoring the access to objects. We create trees containing nodes ranging from 2500 to 25000 nodes. The experimental results indicate that Tracer invokes an overhead of around 20\% over vanilla C implementation. Page protection mechanism has an overhead of 3 orders of magnitude (refer to Fig. \ref{fig:create}). The average time for creation of a binary tree with vanilla C implementation is around 3.77 milliseconds (over the different number of nodes), 4.5 milliseconds for Tracer and over 1 second for page protection mechanism. One of the primary reasons for the poor performance of page protection mechanism is the overheads involved in the eviction of an object from the page table and its subsequent insertion in the object table. This requires a system call (triggered due to access to a protected page), eviction of page from the page buffer (overheads due to memory copy), page materialization (requiring memory copy from the object table to the page buffer and a look up in the object table). 
 
 \begin{figure}[!h]
 \caption{B-Tree Benchmark Results For Tree Creation}
@@ -22,7 +22,7 @@ The first test measures the overall overhead that Tracer has while monitoring th
 \begin{figure}[!h]
 \caption{B-Tree Benchmark Results For Update Workloads}
 \label{fig:update}
-\includegraphics[scale=0.4]{./images/update.png}
+\includegraphics[scale=0.33]{./images/update.png}
 \end{figure}
   
 

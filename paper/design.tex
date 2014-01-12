@@ -2,6 +2,26 @@
 \label{sec:design}
 \paragraph{High level design}
 Tracer is a designed as a generic pluggable tool for monitoring object level accesses for C programs. The high level design of Tracer can be bifurcated into two major components. These consist of an {\emph{interception}} based pre processing engine and a {\emph{monitoring engine}} coupled with the standard memory management library ({\emph{malloc library}}. Besides, Tracer provides flexible interfaces to the developer to monitor object access levels accurately. 
+
+\paragraph{Flow of operations}
+The flow of operations which eventually leads to memory monitoring can be summarized in the following three steps (refer to Fig. \ref{fig:architecture}):
+\begin{enumerate}
+\item A preprocessing engine which instruments C code with memory access calls.
+\item A set of standard APIs which provide interfaces which:
+\begin{itemize}
+\item allocate/deallocate objects augmented with headers, 
+\item register memory access calls
+\item output summary of memory access footprint at object level granularity
+\end{itemize}
+\item A statistics store for saving application's object access count information.
+\end{enumerate}
+
+\begin{figure}[!ht]
+\caption{High level architectural design}
+\label{fig:architecture}
+\includegraphics[scale=0.3]{./images/architecture.png}
+\end{figure}
+
 \paragraph{Interceptor: Transparent Instrumentation}
 The interceptor uses preprocessing and code level instrumentation for injecting calls which enable the monitoring mechanism. In order to monitor object references, Tracer uses an interceptor which pre-processes standard C source code. The interceptor classifies literals into different classes of 8 different class types. {\emph{Identifiers}} which are allocated as dynamic objects are identified as {\emph{trace targets}}.  The interceptor adds an {\emph{access}} function call ({\emph{mem\_access}}) following an access to each {\emph{trace target}}. This {\emph{mem\_access}} library call increments the object's hidden count variable by one. 
 \paragraph{Header Augmented Objects}

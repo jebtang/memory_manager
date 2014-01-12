@@ -1,15 +1,44 @@
-\begin{thebibliography}{1}
+\begin{thebibliography}{7}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
   \providecommand{\doi}[1]{doi: #1}\else
   \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
 
-\bibitem[Freedman et~al.(2004)Freedman, Freudenthal, and
-  Mazi{\`e}res]{coral:nsdi04}
-M.~J. Freedman, E.~Freudenthal, and D.~Mazi{\`e}res.
-\newblock Democratizing content publication with {Coral}.
-\newblock In \emph{Proc.\ 1st Symposium on Networked Systems Design and
-  Implementation ({NSDI})}, San Francisco, CA, Mar. 2004.
+\bibitem[gdb()]{gdb}
+URL \url{"http://aosabook.org/en/gdb.html"}.
+
+\bibitem[Badam and Pai(2011)]{SSDAlloc}
+A.~Badam and V.~S. Pai.
+\newblock Ssdalloc: hybrid ssd/ram memory management made easy.
+\newblock In \emph{Proceedings of the 8th USENIX conference on Networked
+  systems design and implementation}, pages 16--16. USENIX Association, 2011.
+
+\bibitem[Badam and Pai(2013)]{Chameleon}
+A.~Badam and V.~S. Pai.
+\newblock Better flash access via shape-shifting virtual memory pages.
+\newblock In \emph{Proc.\ Conference on Timely Results in Operating Systems},
+  Farmington, PA, Nov. 2013.
+
+\bibitem[Castro et~al.(1997)Castro, Adya, Liskov, and Myers]{castro1997hac}
+M.~Castro, A.~Adya, B.~Liskov, and A.~C. Myers.
+\newblock Hac: Hybrid adaptive caching for distributed storage systems.
+\newblock In \emph{ACM SIGOPS Operating Systems Review}, volume~31, pages
+  102--115. ACM, 1997.
+
+\bibitem[Nethercote and Seward(2007)]{nethercote2007valgrind}
+N.~Nethercote and J.~Seward.
+\newblock Valgrind: a framework for heavyweight dynamic binary instrumentation.
+\newblock \emph{ACM Sigplan Notices}, 42\penalty0 (6):\penalty0 89--100, 2007.
+
+\bibitem[Newsome and Song(2005)]{newsome2005dynamic}
+J.~Newsome and D.~Song.
+\newblock Dynamic taint analysis for automatic detection, analysis, and
+  signature generation of exploits on commodity software.
+\newblock 2005.
+
+\bibitem[Payer et~al.()Payer, Kravina, and Gross]{payerlightweight}
+M.~Payer, E.~Kravina, and T.~R. Gross.
+\newblock Lightweight memory tracing.
 
 \end{thebibliography}
