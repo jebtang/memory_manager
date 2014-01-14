@@ -32,7 +32,7 @@ The first test measures the overall overhead that Tracer incurs while monitoring
   
 
 \paragraph{Binary Tree Read Tests}
-The second set of tests measure the overall overhead incurred in reading a set of random objects from a Binary Tree of a fixed size (the number of nodes in the binary tree was kept to 2500). For the read tests, we generate a random set of keys and search for them in a preconstructed binary tree. We vary the number of keys read from 500,000 to 2 million per experiment. Each data point is an average of 10 different experiments. Tracer has a reasonable overhead (of around $40\%$) over the vanilla C implementation, while the page protection mechanism has an overhead of $28\%$ (refer to Fig. \ref{fig:read}}). 
+The second set of tests measure the overall overhead incurred in reading a set of random objects from a Binary Tree of a fixed size (the number of nodes in the binary tree was kept to 2500). For the read tests, we generate a random set of keys and search for them in a preconstructed binary tree. We vary the number of keys read from 500,000 to 2 million per experiment. Each data point is an average of 10 different experiments. Tracer has a reasonable overhead of around $40\%$ over the vanilla C implementation, while the page protection mechanism has an overhead of $28\%$ (refer to Fig. \ref{fig:read}}). 
 Tracer incurs slightly more overhead because it performs fine grained monitoring, whereas page protection mechanisms provide an approximation of the access pattern of the application. These overheads are reasonable considering the more precise information that Tracer provides the developer with.
 
 \paragraph{Binary Tree Update Tests}
